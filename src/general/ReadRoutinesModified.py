@@ -221,13 +221,13 @@ def read_mitgcm(MITGCM_filename, run_vars):
 
 
 def ReadMITGCM(
-    mitgcm_filename,
+    MITGCM_filename,
     clim_filename,
     density_file,
+    trainval_split_ratio,  # 0.7
+    valtest_split_ratio,  # 0.9
     data_name,  # alpha.001_3dLatLonDepUVBolSalEtaDnsPolyDeg1_Step1_PredictDelT
     run_vars,  # dictionary with variables for the run
-    trainval_split_ratio=0.7,  # 0.7
-    valtest_split_ratio=0.9,
     save_arrays=False,
     plot_histograms=False,
 ):
@@ -279,7 +279,7 @@ def ReadMITGCM(
     sample_times = [(t, t + 1) for t in full_range]
 
     # Read Dataset and subsample
-    ds = xr.open_dataset(mitgcm_filename)
+    ds = xr.open_dataset(MITGCM_filename)
     ds = ds.isel(T=np.array(sample_times).flatten())
 
     da_T = ds["Ttave"].values
@@ -298,7 +298,7 @@ def ReadMITGCM(
     da_V = (da_V_tmp[:, :, :-1, :] + da_V_tmp[:, :, 1:, :]) / 2.0
 
     density = np.load(density_file, mmap_mode="r")
-    print('Shape of density dataset: ', density.shape)
+    print(density.shape)
 
     ds_clim = xr.open_dataset(clim_filename)
     da_clim_T = ds_clim["Ttave"].values
@@ -385,6 +385,7 @@ def ReadMITGCM(
     z_up_3 = 31  # one higher than the point we want to forecast for, i.e. first point we're not forecasting
 
     for t in range(len(trainval_range)):
+        print(t*200)
         # ---------#
         # Region1 #
         # ---------#
@@ -822,6 +823,7 @@ def ReadMITGCM(
 
     for t in range(len(trainval_range),
                    len(trainval_range) + len(valtest_range)):
+        print(t*200)
         # ---------#
         # Region1 #
         # ---------#
@@ -1264,6 +1266,7 @@ def ReadMITGCM(
 
     for t in range(len(trainval_range) + len(valtest_range),
                    len(trainval_range) + len(valtest_range) + len(test_range)):
+        print(t*200)
         # ---------#
         # Region1 #
         # ---------#
@@ -1841,13 +1844,13 @@ def ReadMITGCM(
 
     # print most extreme values...
     print(
-        "Highest and lowest values in training data:   "
+        "highest and lowest values in training data:   "
         + str(np.max(outputs_tr_DelT))
         + ", "
         + str(np.min(outputs_tr_DelT))
     )
     print(
-        "Highest and lowest values in validation data: "
+        "highest and lowest values in validation data: "
         + str(np.max(outputs_val_DelT))
         + ", "
         + str(np.min(outputs_val_DelT))
@@ -1855,25 +1858,25 @@ def ReadMITGCM(
 
     # print out moments of dataset
     print(
-        "Mean of train and val sets : "
+        "mean of train and val sets : "
         + str(np.mean(outputs_tr_DelT))
         + ", "
         + str(np.mean(outputs_val_DelT))
     )
     print(
-        "Std  of train and val sets : "
+        "std  of train and val sets : "
         + str(np.std(outputs_tr_DelT))
         + ", "
         + str(np.std(outputs_val_DelT))
     )
     print(
-        "Skew of train and val sets : "
+        "skew of train and val sets : "
         + str(stats.skew(outputs_tr_DelT))
         + ", "
         + str(stats.skew(outputs_val_DelT))
     )
     print(
-        "Kurtosis of train and val sets : "
+        "kurtosis of train and val sets : "
         + str(stats.kurtosis(outputs_tr_DelT))
         + ", "
         + str(stats.kurtosis(outputs_val_DelT))
@@ -1882,7 +1885,7 @@ def ReadMITGCM(
     # ----------------------------------------------
     # Normalise Data (based on training data only)
     # ----------------------------------------------
-    print("Normalising Data")
+    print("normalise")
 
     def normalise_data(train, val, test):
         train_mean, train_std = np.mean(train), np.std(train)
@@ -1987,7 +1990,7 @@ def ReadMITGCM(
     info_file.close
 
     if save_arrays:
-        print("Saving arrays")
+        print("save arrays")
         inputs_tr_filename = (
             "../../../INPUT_OUTPUT_ARRAYS/SinglePoint_"
             + data_name
@@ -2034,12 +2037,12 @@ def ReadMITGCM(
         np.save(outputs_te_Temp_filename, norm_outputs_te_Temp)
         os.system("gzip %s" % (outputs_te_Temp_filename))
 
-    print("Shape for inputs and outputs: tr; val; te")
+    print("shape for inputs and outputs: tr; val; te")
     print(norm_inputs_tr.shape, norm_outputs_tr_DelT.shape)
     print(norm_inputs_val.shape, norm_outputs_val_DelT.shape)
     print(norm_inputs_te.shape, norm_outputs_te_DelT.shape)
 
-    print("Shape for orig_temp and clim_temp, tr&val")
+    print("shape for orig_Temp and clim_Temp, tr&val")
     print(orig_tr_Temp.shape, orig_val_Temp.shape)
     print(clim_tr_Temp.shape, clim_val_Temp.shape)
 

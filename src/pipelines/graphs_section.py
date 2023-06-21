@@ -163,8 +163,6 @@ def ocean_dynamics_plots(
         np.amax(dam[0,:,y_coord,:]) 
     )
     
-    print("\n\n\n\n\n\n\n\n")
-    
     print("================================================")
 
     print("\n 25 M BELOW THE SURFACE FOR ONE PARTICULAR DAY \n")
@@ -251,7 +249,6 @@ def ocean_dynamics_plots(
     plt.show()
     plt.savefig(f"{figs_path}fig1c_color.png", format='png', bbox_inches = 'tight', pad_inches = 0.1)
     
-    print("\n\n\n\n\n\n\n\n")
    
     print("================================================")
 
@@ -316,7 +313,6 @@ def ocean_dynamics_plots(
 
     )
     
-    print("\n\n\n\n\n\n\n\n")
            
     print("================================================")
 
@@ -326,20 +322,10 @@ def ocean_dynamics_plots(
     
     daa = da.sel(X=17, Y=57, Z=-25, method='nearest')
     
-    # Set figure's height and width
-    fig = plt.figure()
-    fig.set_figwidth(15)
-    fig.set_figheight(2)
-    
-    # Plot the first 20 years
-    daa['Ttave'].head(7200).plot()
-    plt.xticks([])
-    plt.xlabel("Years")
-    plt.ylabel("Temp (°C)")
+    daa['Ttave'].tail(7200).plot()
     plt.show()
     plt.close()
-
-    print("\n\n\n\n\n\n\n\n")
+    
        
     print("================================================")
 
@@ -348,17 +334,7 @@ def ocean_dynamics_plots(
     print("================================================\n")
     
     dab = da.sel(X=9, Y=-55, Z=-25, method='nearest')
-
-    # Set figure's height and width
-    fig = plt.figure()
-    fig.set_figwidth(15)
-    fig.set_figheight(2)
-    
-    # Plot the first 20 years
-    dab['Ttave'].head(7200).plot()
-    plt.xticks([])
-    plt.xlabel("Years")
-    plt.ylabel("Temp (°C)")
+    dab['Ttave'].tail(7200).plot()
     plt.show()
     plt.close()
 
